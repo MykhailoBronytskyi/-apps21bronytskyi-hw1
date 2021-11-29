@@ -6,6 +6,18 @@ import org.junit.Test;
 public class TemperatureSeriesAnalysisTest {
 
     @Test
+    public void testFindClosestToZero() {
+        // setup input data and expected result
+        double[] temperatureSeries = {-0.2, 0.2, -0.2};
+        TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);
+        double expResult = 0.2;
+        // call tested method
+        double actualResult = seriesAnalysis.findTempClosestToZero();
+        // compare expected result with actual result
+        assertEquals(expResult, actualResult, 0.00001);
+    }
+
+    @Test
     public void testAverageWithOneElementArray() {
         // setup input data and expected result
         double[] temperatureSeries = {-1.0};
