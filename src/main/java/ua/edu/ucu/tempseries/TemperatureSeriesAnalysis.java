@@ -92,7 +92,7 @@ public class TemperatureSeriesAnalysis {
         };
 
         double pivot = tempValue;
-        double closest = 0;
+        double closest = temperature_series[0];
 
         BigDecimal big_differ = new BigDecimal(10).pow(1000);
         BigDecimal big_pivot = new BigDecimal(pivot);
@@ -106,6 +106,7 @@ public class TemperatureSeriesAnalysis {
 
             if (temp_is_closer){
                 closest = temperature;
+                big_differ = big_temp.subtract(big_pivot).abs();
             }
             else if (big_compare == 0 && temperature > closest){
                 closest = temperature;
