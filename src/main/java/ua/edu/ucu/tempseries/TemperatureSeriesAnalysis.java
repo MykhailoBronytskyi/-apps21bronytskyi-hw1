@@ -1,6 +1,7 @@
 package ua.edu.ucu.tempseries;
 
 
+import lombok.Getter;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -8,15 +9,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 public class TemperatureSeriesAnalysis {
 
     private double[] temperature_series= {};
-    private int size;
-    private int capacity;
-//    Нащо тут цей конструктор?
+    @Getter
+    private int size = 0;
+    @Getter
+    private int capacity = 0;
+
 
     public TemperatureSeriesAnalysis(){
-
     }
 
     private boolean check_if_temperature_is_wrong(double temp) {
@@ -72,7 +75,7 @@ public class TemperatureSeriesAnalysis {
     }
 
     public double min() {
-       return  findTempClosestToValue(Double.MIN_VALUE);
+       return  findTempClosestToValue(-273.15);
     }
 
     public double max() {
@@ -129,6 +132,7 @@ public class TemperatureSeriesAnalysis {
         }
         double[] array_temp = new double[list_temp.size()];
         int idx = 0;
+
         for (double num: list_temp){
             array_temp[idx] = list_temp.get(idx);
             idx++;
@@ -193,10 +197,10 @@ public class TemperatureSeriesAnalysis {
                 '}';
     }
 
-    public static void main(String[] args) {
-        int arr[] = {1,2,3};
-        double value = Math.pow(10,15);
-        double val_2 = Math.pow(10,10);
+//    public static void main(String[] args) {
+//        int arr[] = {1,2,3};
+//        double value = Math.pow(10,15);
+//        double val_2 = Math.pow(10,10);
 //        System.out.println(new BigDecimal(value + val_2));
 //        System.out.println(BigDecimal.valueOf(value).add(BigDecimal.valueOf(-91)).compareTo(BigDecimal.valueOf(value)));
 ////        System.out.println(BigDecimal.valueOf(value).compareTo(BigDecimal.valueOf(value)) ==0);
@@ -204,5 +208,5 @@ public class TemperatureSeriesAnalysis {
 ////        System.out.println((double) 1.0);
 ////        System.out.println( BigDecimal.valueOf(10).pow(308));
 //        System.out.println(BigDecimal.valueOf(Double.MAX_VALUE).compareTo(BigDecimal.valueOf(Double.MAX_VALUE).add(BigDecimal.valueOf(-1))));
-    }
+
 }
