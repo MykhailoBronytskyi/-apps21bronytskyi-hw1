@@ -53,6 +53,20 @@ public class TemperatureSeriesAnalysisTest {
         seriesAnalysis.average();
     }
 
+
+    
+    @Test
+    public void testGetCapacity(){
+        assertEquals(25, statistics.getCapacity());
+    }
+
+    @Test
+    public void testGetSize() {
+        assertEquals(25, statistics.getSize());
+    }
+
+
+
     @Test
     public void testAverage() {
         double[] temperatureSeries = {3.0, -5.0, 1.0, 5.0};
@@ -63,8 +77,6 @@ public class TemperatureSeriesAnalysisTest {
 
         assertEquals(expResult, actualResult, 0.00001);
     }
-
-
 
     @Test
     public void testTestAverage() {
@@ -130,6 +142,13 @@ public class TemperatureSeriesAnalysisTest {
     @Test
     public void testFindTempClosestToValue() {
         assertEquals(-200, statistics.findTempClosestToValue(-210), 0.00001);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFindTempClosestToValueWithWrongValue() {
+        double[] temperatureSeries = {3.0, -5.0, 1.0, 5.0};
+        TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);
+        seriesAnalysis.findTempClosestToValue(-1000);
     }
 
     @Test(expected = IllegalArgumentException.class)

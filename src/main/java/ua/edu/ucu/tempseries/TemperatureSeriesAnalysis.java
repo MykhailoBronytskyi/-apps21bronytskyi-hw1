@@ -22,7 +22,7 @@ public class TemperatureSeriesAnalysis {
 
     private boolean check_if_temperature_is_wrong(double temp) {
 
-        if (temp < -273.15 && temp > Double.MAX_VALUE) {
+        if (temp < -273.15 || temp > Double.MAX_VALUE) {
             throw new IllegalArgumentException();
         }
         return false;
