@@ -14,6 +14,10 @@ public class TemperatureSeriesAnalysis {
     @Getter
     private int capacity = 0;
 
+    private double minTemperature = -273.15;
+    private double maxTemperature = Double.MAX_VALUE / 10;
+
+
     public double[] getTemperature_series() {
         return Arrays.copyOf(temperature_series, this.capacity);
     }
@@ -23,7 +27,7 @@ public class TemperatureSeriesAnalysis {
 
     private boolean check_if_temperature_is_wrong(double temp) {
 
-        if (temp < -273.15 || temp > Double.MAX_VALUE / 10) {
+        if (temp < minTemperature || temp > maxTemperature) {
             throw new IllegalArgumentException();
         }
         return false;
@@ -74,11 +78,11 @@ public class TemperatureSeriesAnalysis {
     }
 
     public double min() {
-        return findTempClosestToValue(-273.15);
+        return findTempClosestToValue(minTemperature);
     }
 
     public double max() {
-        return findTempClosestToValue(Double.MAX_VALUE / 10);
+        return findTempClosestToValue(maxTemperature);
     }
 
     public double findTempClosestToZero() {
@@ -87,11 +91,8 @@ public class TemperatureSeriesAnalysis {
 
     public double findTempClosestToValue(double tempValue) {
 
-        this.check_if_array_is_empty();
-
-        if (check_if_temperature_is_wrong(tempValue)) {
-            throw new IllegalArgumentException();
-        }
+        check_if_array_is_empty();
+        check_if_temperature_is_wrong(tempValue);
 
         double closest = temperature_series[0];
 
@@ -199,9 +200,9 @@ public class TemperatureSeriesAnalysis {
 
     @Override
     public String toString() {
-        return "TemperatureSeriesAnalysis{" +
-                "temperature_series=" + Arrays.toString(temperature_series) +
-                '}';
+        return "TemperatureSeriesAnalysis{"
+                + "temperature_series=" + Arrays.toString(temperature_series)
+                + '}';
     }
 
 }
