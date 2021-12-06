@@ -2,24 +2,22 @@ package ua.edu.ucu.tempseries;
 
 
 import lombok.Getter;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 
 public class TemperatureSeriesAnalysis {
-
-    private double[] temperature_series= {};
+    private double[] temperature_series = {};
     @Getter
     private int size = 0;
     @Getter
     private int capacity = 0;
 
+    public double[] getTemperature_series() {
+        return Arrays.copyOf(temperature_series, this.capacity);
+    }
 
-    public TemperatureSeriesAnalysis(){
+    public TemperatureSeriesAnalysis() {
     }
 
     private boolean check_if_temperature_is_wrong(double temp) {
@@ -30,8 +28,8 @@ public class TemperatureSeriesAnalysis {
         return false;
     }
 
-    private boolean check_if_array_is_empty(){
-        if (temperature_series.length == 0){
+    private boolean check_if_array_is_empty() {
+        if (temperature_series.length == 0) {
             throw new IllegalArgumentException();
         }
         return false;
@@ -54,7 +52,7 @@ public class TemperatureSeriesAnalysis {
         this.check_if_array_is_empty();
 
         double sum = 0;
-        for (double temp: temperature_series){
+        for (double temp : temperature_series) {
             sum += temp;
         }
         double average = sum / temperature_series.length;
@@ -66,20 +64,20 @@ public class TemperatureSeriesAnalysis {
         double average = average();
         double deviation = 0;
 
-        for (double temp: temperature_series){
+        for (double temp : temperature_series) {
             deviation += Math.pow(temp - average, 2);
         }
-        deviation = Math.sqrt(deviation/temperature_series.length);
+        deviation = Math.sqrt(deviation / temperature_series.length);
 
         return deviation;
     }
 
     public double min() {
-       return  findTempClosestToValue(-273.15);
+        return findTempClosestToValue(-273.15);
     }
 
     public double max() {
-        return  findTempClosestToValue(Double.MAX_VALUE);
+        return findTempClosestToValue(Double.MAX_VALUE);
     }
 
     public double findTempClosestToZero() {
@@ -90,103 +88,111 @@ public class TemperatureSeriesAnalysis {
 
         this.check_if_array_is_empty();
 
-        if (check_if_temperature_is_wrong(tempValue)){
+        if (check_if_temperature_is_wrong(tempValue)) {
             throw new IllegalArgumentException();
-        };
+        }
 
-        double pivot = tempValue;
         double closest = temperature_series[0];
 
         BigDecimal big_differ = new BigDecimal(10).pow(1000);
-        BigDecimal big_pivot = new BigDecimal(pivot);
+        BigDecimal big_pivot = new BigDecimal(tempValue);
 
-
-        for (double temperature: temperature_series){
+        for (double temperature : temperature_series) {
 
             BigDecimal big_temp = new BigDecimal(temperature);
             int big_compare = big_temp.subtract(big_pivot).abs().compareTo(big_differ);
             boolean temp_is_closer = big_compare < 0;
 
-            if (temp_is_closer){
+            if (temp_is_closer) {
                 closest = temperature;
                 big_differ = big_temp.subtract(big_pivot).abs();
-            }
-            else if (big_compare == 0 && temperature > closest){
+            } else if (big_compare == 0 && temperature > closest) {
                 closest = temperature;
             }
         }
         return closest;
     }
 
-    public double[] findTempsLessThen(double tempValue) {
+    public enum Operator {
+
+        LESS() {
+            public boolean apply(double x1, double x2) {
+                return x1 < x2;
+            }
+        },
+        GREATER() {
+            public boolean apply(double x1, double x2) {
+                return x1 > x2;
+            }
+        };
+
+        public abstract boolean apply(double x1, double x2);
+    }
+
+    public double[] findCompared(double tempValue, Operator operator) {
+        check_if_array_is_empty();
+
         BigDecimal pivot = new BigDecimal(tempValue);
+        TemperatureSeriesAnalysis new_array = new TemperatureSeriesAnalysis();
 
-        List<Double> list_temp = new ArrayList<Double>();
+        for (double temperature : temperature_series) {
+            BigDecimal big_temp = new BigDecimal(temperature);
 
-        for (double temp: temperature_series){
-            BigDecimal big_temp = new BigDecimal(temp);
-
-            if (big_temp.compareTo(pivot) < 0){
-                list_temp.add(temp);
+            if (operator.apply(big_temp.compareTo(pivot), 0)) {
+                new_array.addTemps(temperature);
             }
         }
-        double[] array_temp = new double[list_temp.size()];
-        int idx = 0;
+        //Create new array that will be fully filled
+        double[] result_array = new double[new_array.size];
 
-        for (double num: list_temp){
-            array_temp[idx] = list_temp.get(idx);
-            idx++;
+
+        for (int idx = 0; idx < new_array.size; idx++) {
+            result_array[idx] = new_array.temperature_series[idx];
         }
-        return array_temp;
+        return result_array;
+    }
+
+    public double[] findTempsLessThen(double tempValue) {
+        return findCompared(tempValue, Operator.LESS);
     }
 
     public double[] findTempsGreaterThen(double tempValue) {
-
-        double[] temp_array_less = findTempsLessThen(tempValue);
-        double[] temp_array_greater = new double[temp_array_less.length];
-
-        int pointer_less = 0;
-        int pointer_greater = 0;
-
-        for (double temp: temperature_series){
-            if (temp == temp_array_less[pointer_less]) {
-                pointer_less++;
-            }else {
-                temp_array_greater[pointer_greater] = temp;
-                pointer_greater++;
-            }
-        }
-        return temp_array_greater;
+        return findCompared(tempValue, Operator.GREATER);
     }
 
     public TempSummaryStatistics summaryStatistics() {
         this.check_if_array_is_empty();
-        return new TempSummaryStatistics( this.average(), this.deviation(),this.min(),this.max());
+        return new TempSummaryStatistics(this.average(), this.deviation(), this.min(), this.max());
     }
 
     public int addTemps(double... temps) {
 
-        for (double temp: temps){
+        for (double temp : temps) {
             check_if_temperature_is_wrong(temp);
         }
 
-        while (capacity > size + temps.length){
-            capacity = capacity*2 + 1;
+        while (capacity < size + temps.length) {
+            capacity = capacity * 2 + 1;
         }
-        size = size + temps.length;
-
 
         double[] new_temp_array = new double[capacity];
         int idx = 0;
 
-        for (double temp: temperature_series){
+
+        for (int size_idx = 0; size_idx < this.size; size_idx++) {
+            new_temp_array[idx] = temperature_series[size_idx];
+            idx++;
+
+        }
+
+        for (double temp : temps) {
             new_temp_array[idx] = temp;
             idx++;
         }
-        for (double temp: temps){
-            new_temp_array[idx] = temp;
-            idx++;
-        }
+
+        temperature_series = new_temp_array;
+
+        size = size + temps.length;
         return size;
     }
 
@@ -196,17 +202,5 @@ public class TemperatureSeriesAnalysis {
                 "temperature_series=" + Arrays.toString(temperature_series) +
                 '}';
     }
-
-//    public static void main(String[] args) {
-//        int arr[] = {1,2,3};
-//        double value = Math.pow(10,15);
-//        double val_2 = Math.pow(10,10);
-//        System.out.println(new BigDecimal(value + val_2));
-//        System.out.println(BigDecimal.valueOf(value).add(BigDecimal.valueOf(-91)).compareTo(BigDecimal.valueOf(value)));
-////        System.out.println(BigDecimal.valueOf(value).compareTo(BigDecimal.valueOf(value)) ==0);
-////        System.out.println(value == value);
-////        System.out.println((double) 1.0);
-////        System.out.println( BigDecimal.valueOf(10).pow(308));
-//        System.out.println(BigDecimal.valueOf(Double.MAX_VALUE).compareTo(BigDecimal.valueOf(Double.MAX_VALUE).add(BigDecimal.valueOf(-1))));
 
 }
