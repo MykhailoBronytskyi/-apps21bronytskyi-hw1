@@ -2,6 +2,7 @@ package ua.edu.ucu.tempseries;
 
 
 import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -22,7 +23,7 @@ public class TemperatureSeriesAnalysis {
 
     private boolean check_if_temperature_is_wrong(double temp) {
 
-        if (temp < -273.15 || temp > Double.MAX_VALUE) {
+        if (temp < -273.15 || temp > Double.MAX_VALUE / 10) {
             throw new IllegalArgumentException();
         }
         return false;
@@ -77,7 +78,7 @@ public class TemperatureSeriesAnalysis {
     }
 
     public double max() {
-        return findTempClosestToValue(Double.MAX_VALUE);
+        return findTempClosestToValue(Double.MAX_VALUE / 10);
     }
 
     public double findTempClosestToZero() {
