@@ -158,13 +158,6 @@ public class TemperatureSeriesAnalysisTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testFindTempClosestToValueWithWrongValue2() {
-        double[] temperatureSeries = {3.0, -5.0, 1.0, 5.0};
-        TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis(temperatureSeries);
-        seriesAnalysis.findTempClosestToValue(Double.MAX_VALUE);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testEmptyFindTempClosestToValue() {
         empty_statistics.findTempClosestToValue(100);
     }
